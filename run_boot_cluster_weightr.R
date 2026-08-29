@@ -20,7 +20,7 @@ print.myresult <- function(x, ...) {
 ### Clustered Step-Function Selection Model (Weight-R with parallel bootstrap)
 
 #nboot = 500;steps=c(.5,.025);ncores=16;seed = 2026
-#yi = tm$yi; vi = tm$vi;cluster.id = tm$cluster.id
+#yi = tm$yi; vi = tm$vi;cluster_id = tm$cluster.id
 
 
 run_boot_cluster_weightr <- function(
@@ -132,7 +132,7 @@ sort(vv[is.finite(vv) & vv > 0])[1:10]
   # Cluster bootstrap
   # ---------------------------------------------------------
 
-  clusters <- unique(cluster.id)
+  clusters <- unique(cluster_id)
   k_clust  <- length(clusters)
 
   cat(
@@ -154,7 +154,7 @@ sort(vv[is.finite(vv) & vv > 0])[1:10]
     idx <- unlist(
       lapply(
         boot_samples[[b]],
-        function(cid) which(cluster.id == cid)
+        function(cid) which(cluster_id == cid)
       ),
       use.names = FALSE
     )
@@ -246,7 +246,7 @@ sort(vv[is.finite(vv) & vv > 0])[1:10]
   clusterExport(
     cl,
     varlist = c(
-      "yi", "vi", "cluster.id",
+      "yi", "vi", "cluster_id",
       "boot_samples",
       "steps", "weights", "fe",
       "boot_names"
@@ -494,7 +494,7 @@ sort(vv[is.finite(vv) & vv > 0])[1:10]
 run_boot_cluster_petpeese <- function(
   yi,
   vi,
-  cluster.id,
+  cluster_id,
   nboot = 500,
   ncores = parallel::detectCores() - 1,
   seed = 2026,
@@ -506,24 +506,24 @@ run_boot_cluster_petpeese <- function(
   # =========================================================
 
   if (length(yi) != length(vi) ||
-      length(yi) != length(cluster.id)) {
-    stop("yi, vi, and cluster.id must have the same length.")
+      length(yi) != length(cluster_id)) {
+    stop("yi, vi, and cluster_id must have the same length.")
   }
 
   ok <- is.finite(yi) &
         is.finite(vi) &
         vi > 0 &
-        !is.na(cluster.id)
+        !is.na(cluster_id)
 
   yi         <- yi[ok]
   vi         <- vi[ok]
-  cluster.id <- cluster.id[ok]
+  cluster_id <- cluster_id[ok]
 
   if (length(yi) < 3) {
     stop("Too few valid effect sizes.")
   }
 
-  clusters <- unique(cluster.id)
+  clusters <- unique(cluster_id)
   k_clust  <- length(clusters)
 
   if (k_clust < 3) {
@@ -550,7 +550,7 @@ run_boot_cluster_petpeese <- function(
   # p-values, and the PET decision rule.
   # =========================================================
 
-  fit_one <- function(yi, vi, cluster.id, alpha = .05) {
+  fit_one <- function(yi, vi, cluster_id, alpha = .05) {
 
     sei <- sqrt(vi)
 
@@ -567,7 +567,7 @@ run_boot_cluster_petpeese <- function(
 
     pet_rob <- metafor::robust(
       pet_fit,
-      cluster = cluster.id,
+      cluster = cluster_id,
       adjust = TRUE,
       clubSandwich = FALSE
     )
@@ -586,7 +586,7 @@ run_boot_cluster_petpeese <- function(
 
     peese_rob <- metafor::robust(
       peese_fit,
-      cluster = cluster.id,
+      cluster = cluster_id,
       adjust = TRUE,
       clubSandwich = FALSE
     )
@@ -701,7 +701,7 @@ run_boot_cluster_petpeese <- function(
   orig <- fit_one(
     yi = yi,
     vi = vi,
-    cluster.id = cluster.id,
+    cluster_id = cluster_id,
     alpha = alpha
   )
 
@@ -746,7 +746,7 @@ run_boot_cluster_petpeese <- function(
     idx_list <- lapply(
       sampled_clusters,
       function(cid) {
-        which(cluster.id == cid)
+        which(cluster_id == cid)
       }
     )
 
@@ -770,7 +770,7 @@ run_boot_cluster_petpeese <- function(
       fit_one(
         yi = yi[idx],
         vi = vi[idx],
-        cluster.id = cluster_b,
+        cluster_id = cluster_b,
         alpha = alpha
       ),
 
@@ -812,7 +812,7 @@ run_boot_cluster_petpeese <- function(
     varlist = c(
       "yi",
       "vi",
-      "cluster.id",
+      "cluster_id",
       "boot_samples",
       "fit_one",
       "orig",
