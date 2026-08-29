@@ -25,7 +25,7 @@ print.myresult <- function(x, ...) {
 
 run_boot_cluster_weightr <- function(
   yi, vi, 
-  cluster.id,
+  cluster_id,
   nboot = 500,
   steps = c(.5, .05, .025),
   weights = NULL,
