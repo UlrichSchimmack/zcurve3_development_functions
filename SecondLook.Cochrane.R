@@ -3,6 +3,9 @@ rm(list = ls())
 
 options(scipen = 999)
 
+install.packages("remotes")
+remotes::install_github("UlrichSchimmack/zcurve3")
+
 library(zcurve3)
 
 library(dplyr)
